@@ -16,5 +16,8 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
    @EntityGraph(attributePaths = {"store"})
    List<Stock> findStocksByStoreId(Long storeId);
 
+   Optional<Stock> findStockByStoreIdAndSku(Long storeId, String sku);
 
+
+   boolean existsStockBySku(String sku);
 }

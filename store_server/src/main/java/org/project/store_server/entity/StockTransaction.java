@@ -22,15 +22,14 @@ public class StockTransaction {
     private Stock stock;
 
     @Column(nullable = false)
+    private String sku;
+
+    @Column(nullable = false)
     private Long storeId;
 
     @Column(nullable = false)
     @PositiveOrZero(message = "Amount must be positive or zero")
     private Long consumedQuantity;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private TransactionType transactionType;
 
     private LocalDateTime createdAt = LocalDateTime.now() ;
 

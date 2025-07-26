@@ -18,6 +18,7 @@ public class Stock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String sku;
 
     @PositiveOrZero(message = "quantity must be a greater than or equals zero")

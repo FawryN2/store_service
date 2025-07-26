@@ -6,13 +6,16 @@ import lombok.RequiredArgsConstructor;
 import org.project.store_server.entity.Stock;
 import org.project.store_server.entity.Store;
 import org.project.store_server.exception.ConflictException;
+import org.project.store_server.exception.InsufficientAmountException;
 import org.project.store_server.mapper.StockMapper;
+import org.project.store_server.model.dto.product.ProductRequestDto;
 import org.project.store_server.model.dto.stock.StockRequestDto;
 import org.project.store_server.model.dto.stock.StockResponseDto;
 import org.project.store_server.repository.StockRepository;
 import org.project.store_server.repository.StoreRepository;
 import org.project.store_server.service.ProductService;
 import org.project.store_server.service.StockService;
+import org.project.store_server.service.StockTransactionService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,6 +30,7 @@ public class StockServiceImpl implements StockService {
     private final StoreRepository storeRepository;
     private final StockRepository stockRepository;
     private final ProductService productService;
+    private final StockTransactionService stockTransactionService;
     private final StockMapper stockMapper;
 
 
@@ -95,8 +99,10 @@ public class StockServiceImpl implements StockService {
     @Override
     public StockResponseDto updateStock(Long stockId, StockRequestDto stockRequestDto) {
         Stock existingStock = this.findStock(stockId);
-
-        existingStock.setSku(stockRequestDto.getSku());
+        String sku = stockRequestDto.getSku();
+        if(!stockRepository.existsStockBySku(sku)){
+            throw new EntityNotFoundException("Stock with sku" + " { " + sku + " } " + "not found");
+        }
         existingStock.setQuantity(stockRequestDto.getQuantity());
         existingStock.setUpdatedAt(LocalDateTime.now());
         stockRepository.save(existingStock);
@@ -118,6 +124,35 @@ public class StockServiceImpl implements StockService {
     public String deleteAllStocks() {
         stockRepository.deleteAll();
         return "All stocks have been deleted";
+    }
+
+    @Transactional
+    @Override
+    public String consumeProduct(Long storeId, String sku , ProductRequestDto productRequestDto) {
+
+        boolean isProductAvailable = productService.checkProductAvailability(sku);
+        if(!isProductAvailable){
+            throw new EntityNotFoundException("The product with" + " " + sku + "is not available in stock");
+        }
+
+        Stock stock = stockRepository.findStockByStoreIdAndSku(storeId, sku)
+                .orElseThrow(()-> new EntityNotFoundException("Stock not found for ID" + storeId + " " + "and SKU" + " " + sku));
+
+
+        // consuming product Logic
+
+        Long stockQuantity = stock.getQuantity();
+        Long consumedQuantity = productRequestDto.getQuantity();
+
+        if(consumedQuantity> stockQuantity){
+            throw new InsufficientAmountException("There is no enough amount for this product");
+        }
+
+        stock.setQuantity(stockQuantity-consumedQuantity);
+
+        // logging stock consumption
+        return stockTransactionService.addTransaction(storeId, sku , LocalDateTime.now() , consumedQuantity , stock);
+
     }
 
 

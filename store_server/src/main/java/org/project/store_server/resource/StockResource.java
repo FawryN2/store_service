@@ -2,6 +2,7 @@ package org.project.store_server.resource;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.project.store_server.model.dto.product.ProductRequestDto;
 import org.project.store_server.model.dto.stock.StockRequestDto;
 import org.project.store_server.model.dto.stock.StockResponseDto;
 import org.project.store_server.service.StockService;
@@ -29,7 +30,7 @@ public class StockResource {
         StockResponseDto stock = stockService.getStock(stockId);
         return ResponseEntity.ok(stock);
     }
-    @PostMapping("/{storeId}")
+    @PostMapping("/store/{storeId}")
     public ResponseEntity<StockResponseDto> addStock(@PathVariable Long storeId , @RequestBody @Valid StockRequestDto stockRequestDto){
         StockResponseDto savedStock = stockService.addStock(storeId , stockRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedStock);
@@ -54,6 +55,17 @@ public class StockResource {
 
     }
 
+
+
+    @PostMapping("/consume")
+    public ResponseEntity<String> consumeStock(@RequestParam Long storeId,
+                                               @RequestParam String sku,
+                                               @RequestBody @Valid ProductRequestDto productRequestDto){
+
+
+        return ResponseEntity.ok(stockService.consumeProduct(storeId,sku,productRequestDto));
+
+    }
 
 
 
