@@ -145,7 +145,7 @@ public class StockServiceImpl implements StockService {
         Long consumedQuantity = productRequestDto.getQuantity();
 
         if(consumedQuantity> stockQuantity){
-            throw new InsufficientAmountException("There is no enough amount for this product");
+            throw new InsufficientAmountException("There is no enough amount of this product");
         }
 
         stock.setQuantity(stockQuantity-consumedQuantity);
