@@ -1,5 +1,6 @@
 package org.project.store_server.service;
 
+import org.project.store_server.entity.StockTransaction;
 import org.project.store_server.model.dto.product.ProductRequestDto;
 import org.project.store_server.model.dto.stock.StockRequestDto;
 import org.project.store_server.model.dto.stock.StockResponseDto;
@@ -19,5 +20,6 @@ public interface StockService {
 
     // operations
     String consumeProduct(Long storeId, String sku, ProductRequestDto productRequestDto);
+
 
 }

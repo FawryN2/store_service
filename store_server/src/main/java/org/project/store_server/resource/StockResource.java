@@ -2,10 +2,12 @@ package org.project.store_server.resource;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.project.store_server.entity.StockTransaction;
 import org.project.store_server.model.dto.product.ProductRequestDto;
 import org.project.store_server.model.dto.stock.StockRequestDto;
 import org.project.store_server.model.dto.stock.StockResponseDto;
 import org.project.store_server.service.StockService;
+import org.project.store_server.service.StockTransactionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,7 @@ import java.util.List;
 public class StockResource {
 
     private final StockService stockService;
+    private final StockTransactionService stockTransactionService;
 
     @GetMapping
     public ResponseEntity<List<StockResponseDto>> getAllStocks(){
@@ -66,6 +69,14 @@ public class StockResource {
         return ResponseEntity.ok(stockService.consumeProduct(storeId,sku,productRequestDto));
 
     }
+
+
+
+    @GetMapping("/{stockId}/transactions")
+    public ResponseEntity<List<StockTransaction>> getAllTransactionsForStock(@PathVariable Long stockId){
+        return ResponseEntity.ok(stockTransactionService.getAllStockTransactionsForStock(stockId));
+    }
+
 
 
 

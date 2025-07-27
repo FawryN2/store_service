@@ -1,5 +1,7 @@
 package org.project.store_server.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
@@ -19,6 +21,7 @@ public class StockTransaction {
     private Long id;
 
     @ManyToOne
+    @JsonIgnore
     private Stock stock;
 
     @Column(nullable = false)
