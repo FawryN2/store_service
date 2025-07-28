@@ -51,6 +51,27 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(ClientErrorException.class)
+    public ResponseEntity<ErrorResponse> handleClientErrorException(ClientErrorException ex){
+        ErrorResponse error  = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(error , HttpStatus.BAD_REQUEST);
+    }
+
+
+    @ExceptionHandler(ExternalServiceException.class)
+    public ResponseEntity<ErrorResponse>handleExternalServiceException(ExternalServiceException ex){
+        ErrorResponse error  = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(error , HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGlobalException(Exception ex , WebRequest request){
         ErrorResponse error  = new ErrorResponse(

@@ -4,8 +4,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.project.store_server.entity.StockTransaction;
 import org.project.store_server.model.dto.product.ProductRequestDto;
+import org.project.store_server.model.dto.product.ProductResponseModel;
 import org.project.store_server.model.dto.stock.StockRequestDto;
 import org.project.store_server.model.dto.stock.StockResponseDto;
+import org.project.store_server.service.ProductService;
 import org.project.store_server.service.StockService;
 import org.project.store_server.service.StockTransactionService;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import java.util.List;
 public class StockResource {
 
     private final StockService stockService;
+    private final ProductService productService;
     private final StockTransactionService stockTransactionService;
 
     @GetMapping
@@ -78,6 +81,21 @@ public class StockResource {
     }
 
 
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/products")
+    public List<ProductResponseModel> getAllProducts(){
+        return productService.getAllProducts();
+    }
+
+    @GetMapping("products/{sku}/availability")
+    public ResponseEntity<Boolean> checkProductAvailability(@PathVariable String sku){
+        boolean isAvailable = productService.checkProductAvailability(sku);
+        if(isAvailable){
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+    }
 
 
 
