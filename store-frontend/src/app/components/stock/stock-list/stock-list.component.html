@@ -1,0 +1,116 @@
+<div class="stock-list">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>📦 Stock Management</h1>
+      <p>Manage your inventory across all stores</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="showAddForm()">
+        ➕ Add Stock
+      </button>
+      <button 
+        class="btn btn-danger" 
+        (click)="deleteAllStocks()"
+        [disabled]="stocks.length === 0">
+        🗑️ Delete All
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading stock data...</p>
+  </div>
+
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+    <button class="btn btn-primary" (click)="loadData()">Retry</button>
+  </div>
+
+  <div *ngIf="!loading && !error">
+    <div *ngIf="stocks.length === 0" class="empty-state">
+      <div class="empty-icon">📦</div>
+      <h3>No Stock Items Found</h3>
+      <p>Start managing your inventory by adding stock items</p>
+      <button class="btn btn-primary" (click)="showAddForm()">
+        Add Your First Stock Item
+      </button>
+    </div>
+
+    <div *ngIf="stocks.length > 0" class="stocks-grid">
+      <div *ngFor="let stock of stocks" class="stock-card">
+        <div class="stock-header">
+          <div class="stock-info">
+            <h3>{{ stock.sku }}</h3>
+            <p class="store-name">🏪 {{ getStoreName(stock.storeId) }}</p>
+          </div>
+          <div class="stock-actions">
+            <button class="btn-icon" (click)="editStock(stock)" title="Edit Stock">
+              ✏️
+            </button>
+            <button class="btn-icon" (click)="consumeStock(stock)" title="Consume Stock">
+              📤
+            </button>
+            <button class="btn-icon danger" (click)="deleteStock(stock.id!)" title="Delete Stock">
+              🗑️
+            </button>
+          </div>
+        </div>
+
+        <div class="stock-content">
+          <div class="quantity-display">
+            <div class="quantity-number" [class]="getStockStatusClass(stock.quantity)">
+              {{ stock.quantity }}
+            </div>
+            <div class="quantity-label">Units Available</div>
+          </div>
+
+          <div class="stock-status">
+            <span class="status-badge" [class]="getStockStatusClass(stock.quantity)">
+              {{ getStockStatus(stock.quantity) }}
+            </span>
+          </div>
+
+          <div class="stock-details">
+            <div class="detail-item">
+              <span class="detail-label">Created:</span>
+              <span class="detail-value">{{ stock.createdAt | date:'short' }}</span>
+            </div>
+            <div class="detail-item" *ngIf="stock.updatedAt">
+              <span class="detail-label">Updated:</span>
+              <span class="detail-value">{{ stock.updatedAt | date:'short' }}</span>
+            </div>
+          </div>
+
+          <div class="stock-footer">
+            <a [routerLink]="['/stocks', stock.id]" class="btn btn-outline">
+              View Details
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stock Form Modal -->
+  <div *ngIf="showForm" class="modal-overlay" (click)="onFormClose()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <app-stock-form 
+        [stock]="editingStock"
+        [stores]="stores"
+        (formClose)="onFormClose()">
+      </app-stock-form>
+    </div>
+  </div>
+
+  <!-- Consume Stock Modal -->
+  <div *ngIf="showConsumeForm" class="modal-overlay" (click)="onConsumeFormClose()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <app-consume-stock 
+        [stock]="consumingStock!"
+        [storeName]="getStoreName(consumingStock!.storeId)"
+        (formClose)="onConsumeFormClose()">
+      </app-consume-stock>
+    </div>
+  </div>
+</div>

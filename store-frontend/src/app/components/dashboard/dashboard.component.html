@@ -1,0 +1,138 @@
+<div class="dashboard">
+  <div class="dashboard-header">
+    <h1>📊 Dashboard</h1>
+    <p>Welcome to your Store Management System</p>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading dashboard data...</p>
+  </div>
+
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+    <button class="btn btn-primary" (click)="loadDashboardData()">Retry</button>
+  </div>
+
+  <div *ngIf="!loading && !error">
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">🏪</div>
+        <div class="stat-content">
+          <h3>{{ totalStores }}</h3>
+          <p>Total Stores</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">📦</div>
+        <div class="stat-content">
+          <h3>{{ totalStocks }}</h3>
+          <p>Stock Items</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🛍️</div>
+        <div class="stat-content">
+          <h3>{{ totalProducts }}</h3>
+          <p>Products</p>
+        </div>
+      </div>
+
+      <div class="stat-card warning">
+        <div class="stat-icon">⚠️</div>
+        <div class="stat-content">
+          <h3>{{ lowStockItems }}</h3>
+          <p>Low Stock Items</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <h2>Quick Actions</h2>
+      <div class="action-buttons">
+        <a routerLink="/stores" class="btn btn-primary">
+          <span>🏪</span> Manage Stores
+        </a>
+        <a routerLink="/stocks" class="btn btn-secondary">
+          <span>📦</span> Manage Stock
+        </a>
+        <a routerLink="/products" class="btn btn-outline">
+          <span>🛍️</span> View Products
+        </a>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="dashboard-content">
+      <div class="dashboard-section">
+        <h2>⚠️ Low Stock Alert</h2>
+        <div class="card">
+          <div *ngIf="getLowStockItems().length === 0" class="empty-state">
+            <p>✅ All items are well stocked!</p>
+          </div>
+          <div *ngIf="getLowStockItems().length > 0">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>SKU</th>
+                  <th>Store ID</th>
+                  <th>Quantity</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let stock of getLowStockItems()">
+                  <td>{{ stock.sku }}</td>
+                  <td>{{ stock.storeId }}</td>
+                  <td>
+                    <span class="quantity-badge low">{{ stock.quantity }}</span>
+                  </td>
+                  <td>
+                    <span class="status-badge warning">Low Stock</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-section">
+        <h2>📦 Recent Stock Items</h2>
+        <div class="card">
+          <div *ngIf="getRecentStocks().length === 0" class="empty-state">
+            <p>No stock items found</p>
+          </div>
+          <div *ngIf="getRecentStocks().length > 0">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>SKU</th>
+                  <th>Store ID</th>
+                  <th>Quantity</th>
+                  <th>Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let stock of getRecentStocks()">
+                  <td>{{ stock.sku }}</td>
+                  <td>{{ stock.storeId }}</td>
+                  <td>
+                    <span class="quantity-badge" [class.low]="stock.quantity < 10">
+                      {{ stock.quantity }}
+                    </span>
+                  </td>
+                  <td>{{ stock.createdAt | date:'short' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

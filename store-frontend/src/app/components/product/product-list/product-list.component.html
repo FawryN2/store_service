@@ -1,0 +1,137 @@
+<div class="product-list">
+  <div class="page-header">
+    <div class="header-content">
+      <h1>🛍️ Products Catalog</h1>
+      <p>Browse all available products in the system</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="card">
+      <div class="filters-header">
+        <h3>🔍 Filters</h3>
+        <button class="btn btn-outline" (click)="clearFilters()">
+          Clear All
+        </button>
+      </div>
+      
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label class="form-label">Search Products</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search by name, SKU, or brand..."
+            [(ngModel)]="searchTerm"
+          />
+        </div>
+        
+        <div class="filter-group">
+          <label class="form-label">Category</label>
+          <select class="form-control" [(ngModel)]="selectedCategory">
+            <option value="">All Categories</option>
+            <option *ngFor="let category of categories" [value]="category">
+              {{ category }}
+            </option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label class="form-label">Brand</label>
+          <select class="form-control" [(ngModel)]="selectedBrand">
+            <option value="">All Brands</option>
+            <option *ngFor="let brand of brands" [value]="brand">
+              {{ brand }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading products...</p>
+  </div>
+
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+    <button class="btn btn-primary" (click)="loadProducts()">Retry</button>
+  </div>
+
+  <div *ngIf="!loading && !error">
+    <!-- Results Summary -->
+    <div class="results-summary">
+      <p>
+        Showing <strong>{{ filteredProducts.length }}</strong> of <strong>{{ products.length }}</strong> products
+      </p>
+    </div>
+
+    <div *ngIf="filteredProducts.length === 0 && products.length > 0" class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <h3>No Products Found</h3>
+      <p>Try adjusting your search criteria or filters</p>
+      <button class="btn btn-primary" (click)="clearFilters()">
+        Clear Filters
+      </button>
+    </div>
+
+    <div *ngIf="products.length === 0" class="empty-state">
+      <div class="empty-icon">🛍️</div>
+      <h3>No Products Available</h3>
+      <p>No products are currently available in the system</p>
+    </div>
+
+    <!-- Products Grid -->
+    <div *ngIf="filteredProducts.length > 0" class="products-grid">
+      <div *ngFor="let product of filteredProducts" class="product-card">
+        <div class="product-image">
+          <img 
+            [src]="product.imageUrl" 
+            [alt]="product.name"
+            (error)="$event.target.src='https://via.placeholder.com/300x200?text=No+Image'"
+          />
+          <div class="product-price">
+            ${{ product.price | number:'1.2-2' }}
+          </div>
+        </div>
+        
+        <div class="product-content">
+          <div class="product-header">
+            <h3>{{ product.name }}</h3>
+            <span class="product-brand">{{ product.brand }}</span>
+          </div>
+          
+          <div class="product-details">
+            <div class="detail-row">
+              <span class="detail-label">📦 SKU:</span>
+              <span class="detail-value sku">{{ product.sku }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">🏷️ Category:</span>
+              <span class="detail-value">{{ product.categoryName }}</span>
+            </div>
+          </div>
+          
+          <div class="product-description">
+            <p>{{ product.description }}</p>
+          </div>
+          
+          <div class="product-footer">
+            <div class="product-status">
+              <span class="status-badge success">
+                ✅ Active
+              </span>
+            </div>
+            <button 
+              class="btn btn-secondary"
+              (click)="checkAvailability(product.sku)">
+              Check Stock
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

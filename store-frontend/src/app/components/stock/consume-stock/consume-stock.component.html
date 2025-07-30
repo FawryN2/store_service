@@ -1,0 +1,94 @@
+<div class="consume-stock">
+  <div class="form-header">
+    <h2>📤 Consume Stock</h2>
+    <button class="btn-close" (click)="onCancel()">✕</button>
+  </div>
+
+  <div class="stock-info">
+    <div class="info-card">
+      <div class="info-row">
+        <span class="info-label">🏪 Store:</span>
+        <span class="info-value">{{ storeName }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">📦 SKU:</span>
+        <span class="info-value sku">{{ stock.sku }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">📊 Available:</span>
+        <span class="info-value quantity" [class.low]="stock.quantity < 10">
+          {{ stock.quantity }} units
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <form [formGroup]="consumeForm" (ngSubmit)="onSubmit()" class="form-content">
+    <div *ngIf="error" class="alert alert-error">
+      {{ error }}
+    </div>
+
+    <div *ngIf="success" class="alert alert-success">
+      {{ success }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="quantity">Quantity to Consume *</label>
+      <div class="quantity-input-group">
+        <input
+          type="number"
+          id="quantity"
+          class="form-control"
+          formControlName="quantity"
+          placeholder="Enter quantity"
+          min="1"
+          [max]="stock.quantity"
+          [class.error]="getFieldError('quantity')"
+        />
+        <button 
+          type="button" 
+          class="btn btn-secondary btn-max"
+          (click)="setMaxQuantity()"
+          [disabled]="loading">
+          Max
+        </button>
+      </div>
+      <div *ngIf="getFieldError('quantity')" class="field-error">
+        {{ getFieldError('quantity') }}
+      </div>
+      <div class="field-help">
+        Maximum available: {{ stock.quantity }} units
+      </div>
+    </div>
+
+    <div class="consumption-preview" *ngIf="consumeForm.get('quantity')?.value > 0">
+      <h4>📋 Consumption Preview</h4>
+      <div class="preview-content">
+        <div class="preview-row">
+          <span>Current Stock:</span>
+          <span class="current">{{ stock.quantity }} units</span>
+        </div>
+        <div class="preview-row">
+          <span>Will Consume:</span>
+          <span class="consume">-{{ consumeForm.get('quantity')?.value }} units</span>
+        </div>
+        <div class="preview-row total">
+          <span>Remaining Stock:</span>
+          <span class="remaining" [class.warning]="(stock.quantity - consumeForm.get('quantity')?.value) < 10">
+            {{ stock.quantity - consumeForm.get('quantity')?.value }} units
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-outline" (click)="onCancel()" [disabled]="loading">
+        Cancel
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="loading || consumeForm.invalid">
+        <span *ngIf="loading" class="loading-spinner"></span>
+        Consume Stock
+      </button>
+    </div>
+  </form>
+</div>

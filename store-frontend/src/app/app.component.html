@@ -1,0 +1,29 @@
+<div class="app-container">
+  <header class="header">
+    <div class="container">
+      <nav class="navbar">
+        <div class="nav-brand">
+          <h1>🏪 Store Manager</h1>
+        </div>
+        <ul class="nav-menu">
+          <li><a routerLink="/dashboard" routerLinkActive="active">Dashboard</a></li>
+          <li><a routerLink="/stores" routerLinkActive="active">Stores</a></li>
+          <li><a routerLink="/stocks" routerLinkActive="active">Stocks</a></li>
+          <li><a routerLink="/products" routerLinkActive="active">Products</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="container">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 Store Management System. Built with Angular.</p>
+    </div>
+  </footer>
+</div>
